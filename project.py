@@ -355,8 +355,6 @@ def create_tab_ajout(notebook):
     #Variables pour récupérer les données
 
     name = tk.StringVar()
-    people = tk.IntVar()
-    time = tk.IntVar()
 
     #Label + entry pour récup les données et aider à la compréhension des champs
 
@@ -369,13 +367,15 @@ def create_tab_ajout(notebook):
     ppl_lab = tk.Label(tab4, text="Nombre de personnes: ")
     ppl_lab.pack(pady = 5)
 
-    ppl_entry = tk.Entry(tab4, textvariable=people)
+    #pour éviter des erreurs à cause de str sur des int on ne met pas de textvariable
+
+    ppl_entry = tk.Entry(tab4)
     ppl_entry.pack(pady = 2)
 
     time_lab = tk.Label(tab4, text="Temps de préparation (min): ")
     time_lab.pack(pady = 5)
 
-    time_entry = tk.Entry(tab4, textvariable=time)
+    time_entry = tk.Entry(tab4)
     time_entry.pack(pady = 2)
 
     # comme text, on peut pas récup les données, on doit les prendre avec un .get()
@@ -422,31 +422,48 @@ def create_tab_ajout(notebook):
                 raise ValueError("Le nom de la recette est requis.")
             if any(char.isdigit() for char in name_input):
                 raise ValueError("Le nom de la recette ne doit pas contenir de chiffres.")
+
+            # Validation du champ 'nombre de personnes'
+            people_input = ppl_entry.get().strip()  # Récupérer directement depuis l'Entry
+            if not people_input:
+                raise ValueError("Le nombre de personnes est requis.")
             try:
-                people_val = int(people.get())
+                people_val = int(people_input)
                 if people_val <= 0:
-                    raise ValueError
-            except ValueError:
+                    raise ValueError("Le nombre de personnes doit être un entier positif.")
+            except ValueError as e:
+                if "invalid literal" in str(e):
+                    raise ValueError("Le nombre de personnes doit être un nombre entier valide.")
                 raise ValueError("Le nombre de personnes doit être un entier positif.")
 
+            # Validation du champ 'temps de préparation'
+            time_input = time_entry.get().strip()  # Récupérer directement depuis l'Entry
+            if not time_input:
+                raise ValueError("Le temps de préparation est requis.")
             try:
-                time_val = int(time.get())
+                time_val = int(time_input)
                 if time_val <= 0:
-                    raise ValueError
-            except ValueError:
+                    raise ValueError("Le temps de préparation doit être un entier positif.")
+            except ValueError as e:
+                if "invalid literal" in str(e):
+                    raise ValueError("Le temps de préparation doit être un nombre entier valide.")
                 raise ValueError("Le temps de préparation doit être un entier positif.")
 
-            if not ing_text.get("1.0", tk.END).strip():
+            ing_input = ing_text.get("1.0", tk.END).strip()
+            if not ing_input:
                 raise ValueError("Remplissez la liste d'ingrédients.")
-            if not ins_text.get("1.0", tk.END).strip():
+
+            ins_input = ins_text.get("1.0", tk.END).strip()
+            if not ins_input:
                 raise ValueError("Remplissez un minimum les instructions pour faire la recette.")
+
             motor.add_recipe(
                 table_var.get(),
-                name.get(),
-                people.get(),
-                time.get(),
-                ing_text.get("1.0", tk.END).strip(), #Comme c'est du texte, on est obligé de tout prendre et on initie première ligne et premier caractère.
-                ins_text.get("1.0", tk.END).strip()
+                name_input,
+                people_val,
+                time_val,
+                ing_input,
+                ins_input
             )
             # Vider les champs après ajout
             name_entry.delete(0, tk.END)
@@ -456,8 +473,9 @@ def create_tab_ajout(notebook):
             ins_text.delete("1.0", tk.END)
 
             Messagebox.show_info(title="Succès", message="Recette ajoutée avec succès !")
+
         except ValueError as ve:
-            Messagebox.show_error(title="Erreur", message=(str(ve)))
+            Messagebox.show_error(title="Erreur", message=str(ve))
 
 
     add_button = tk.Button(tab4, text="Ajouter la recette", command=add_recipe_button, bootstyle="success")
