@@ -1,15 +1,18 @@
 import random
 import sqlite3
 
+
 def create_db_connection(db_name=":memory:"):
     conn = sqlite3.connect(db_name)
     return conn
+
 
 def create_tables(conn):
     create_table_entree(conn)
     create_table_plat(conn)
     create_table_dessert(conn)
     conn.commit()
+
 
 def create_table_entree(conn):
     conn.execute("""
@@ -23,6 +26,7 @@ def create_table_entree(conn):
     )    
     """)
 
+
 def create_table_plat(conn):
     conn.execute("""
     CREATE TABLE IF NOT EXISTS plat (
@@ -34,6 +38,7 @@ def create_table_plat(conn):
         instructions TEXT
     )    
     """)
+
 
 def create_table_dessert(conn):
     conn.execute("""
@@ -47,15 +52,22 @@ def create_table_dessert(conn):
     )    
     """)
 
-def add_recipe(conn, table, nom, nombre_de_personne, temps_preparation, ingredients, instructions):
+
+def add_recipe(
+    conn, table, nom, nombre_de_personne, temps_preparation, ingredients, instructions
+):
     if table not in ["entree", "plat", "dessert"]:
         raise ValueError(f"Table inconnue : {table}")
 
-    conn.execute(f"""
+    conn.execute(
+        f"""
         INSERT INTO {table} (nom, nombre_de_personne, temps_preparation, ingredients, instructions)
         VALUES (?, ?, ?, ?, ?)
-    """, (nom, nombre_de_personne, temps_preparation, ingredients, instructions))
+    """,
+        (nom, nombre_de_personne, temps_preparation, ingredients, instructions),
+    )
     conn.commit()
+
 
 def get_recipes_by_category(conn, category):
     if category not in ["entree", "plat", "dessert"]:
@@ -66,6 +78,7 @@ def get_recipes_by_category(conn, category):
         FROM {category}
     """)
     return cursor.fetchall()
+
 
 def get_random_recipe(conn):
     tables = ["entree", "plat", "dessert"]
@@ -86,6 +99,7 @@ def get_random_recipe(conn):
         ORDER BY RANDOM()
     """)
     return cursor.fetchone()
+
 
 def delete_recipe(conn, table, recipe_id):
     if table not in ["entree", "plat", "dessert"]:
