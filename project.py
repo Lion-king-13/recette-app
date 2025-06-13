@@ -222,6 +222,7 @@ def create_tab_plat(notebook):
                 """
         selection = plat_listbox.curselection()
         if selection:
+            plat_recipes = motor.get_recipes_by_category("plat")
             index = selection[0]
             recipe = plat_recipes[index]
             plat_text.config(state="normal")
@@ -298,6 +299,7 @@ def create_tab_dessert(notebook):
                 """
         selection = dessert_listbox.curselection()
         if selection:
+            dessert_recipes = motor.get_recipes_by_category("dessert")
             index = selection[0]
             recipe = dessert_recipes[index]
             dessert_text.config(state="normal")
@@ -465,6 +467,14 @@ def create_tab_ajout(notebook):
                 ing_input,
                 ins_input
             )
+            global entree_recipes, plat_recipes, dessert_recipes
+            if table_var.get() == "entree":
+                entree_recipes = motor.get_recipes_by_category("entree")
+            elif table_var.get() == "plat":
+                plat_recipes = motor.get_recipes_by_category("plat")
+            elif table_var.get() == "dessert":
+                dessert_recipes = motor.get_recipes_by_category("dessert")
+
             # Vider les champs après ajout
             name_entry.delete(0, tk.END)
             ppl_entry.delete(0, tk.END)
@@ -519,6 +529,7 @@ def refresh_tab_content(event):
         Effet :
             Met à jour la Listbox de l'onglet actif avec les recettes actuelles de la catégorie correspondante.
         """
+    global entree_recipes, plat_recipes, dessert_recipes
     selected_tab = event.widget.tab(event.widget.index("current"))["text"]
 
     if selected_tab == "Entrée":

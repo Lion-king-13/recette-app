@@ -81,7 +81,7 @@ def create_table_dessert():
             )    
         """)
 
-def add_recipe(table, nom, nombre_de_personne, temps_preparation, ingredients, instruction):
+def add_recipe(table, nom, nombre_de_personne, temps_preparation, ingredients, instructions):
     """
         Cette fonction ajoute une recette à la table spécifiée dans la base de données.
 
@@ -90,8 +90,8 @@ def add_recipe(table, nom, nombre_de_personne, temps_preparation, ingredients, i
             nom (str) : Nom de la recette.
             nombre_de_personne (int) : Nombre de personnes pour la recette.
             temps_preparation (int) : Temps de préparation en minutes.
-            ingredients (str) : Liste des ingrédients.
-            instruction (str) : Instructions de préparation.
+            ingredients (str) : Liste des ingredients.
+            instructions (str) : instructionss de préparation.
 
         Effet :
             Insère une nouvelle recette dans la table spécifiée et valide les modifications.
@@ -103,9 +103,9 @@ def add_recipe(table, nom, nombre_de_personne, temps_preparation, ingredients, i
         raise ValueError(f"Table inconnue : {table}")
 
     cursor.execute(f"""
-        INSERT INTO {table} (nom, nombre_de_personne, temps_preparation, ingrédients, instruction)
+        INSERT INTO {table} (nom, nombre_de_personne, temps_preparation, ingredients, instructions)
         VALUES (?, ?, ?, ?, ?)
-    """, (nom, nombre_de_personne, temps_preparation, ingredients, instruction))
+    """, (nom, nombre_de_personne, temps_preparation, ingredients, instructions))
     conn.commit()
 
 
@@ -117,7 +117,7 @@ def get_recipes_by_category(category):
             category (str) : Nom de la catégorie ('entree', 'plat' ou 'dessert').
 
         Retourne :
-            list : Liste des recettes sous forme de tuples (id, nom, nombre_de_personne, temps_preparation, ingredients, instruction).
+            list : Liste des recettes sous forme de tuples (id, nom, nombre_de_personne, temps_preparation, ingredients, instructions).
 
         Exception :
             Lève ValueError si la catégorie est inconnue.
@@ -125,7 +125,7 @@ def get_recipes_by_category(category):
     if category not in ["entree", "plat", "dessert"]:
         raise ValueError(f"Catégorie inconnue : {category}")
 
-    cursor.execute(f"SELECT id, nom, nombre_de_personne, temps_preparation, ingrédients, instruction FROM {category}")
+    cursor.execute(f"SELECT id, nom, nombre_de_personne, temps_preparation, ingredients, instructions FROM {category}")
     return cursor.fetchall()
 
 def get_random_recipe():
@@ -133,7 +133,7 @@ def get_random_recipe():
         Cette fonction sélectionne une recette aléatoire parmi toutes les tables non vides.
 
         Retourne :
-            tuple : Une recette sous forme (id, nom, nombre_de_personne, temps_preparation, ingredients, instruction),
+            tuple : Une recette sous forme (id, nom, nombre_de_personne, temps_preparation, ingredients, instructions),
                     ou None si aucune recette n'est disponible.
         """
     tables = ["entree", "plat", "dessert"]
@@ -151,7 +151,7 @@ def get_random_recipe():
     # On lance le random sur la table et la recette
     selected_table = random.choice(available_tables)
     cursor.execute(
-        f"SELECT id, nom, nombre_de_personne, temps_preparation, ingrédients, instruction FROM {selected_table} ORDER BY RANDOM()")
+        f"SELECT id, nom, nombre_de_personne, temps_preparation, ingredients, instructions FROM {selected_table} ORDER BY RANDOM()")
     return cursor.fetchone()
 
 
